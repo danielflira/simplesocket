@@ -37,6 +37,7 @@ class SimpleSocket:
 
         server.settimeout(timeout)
         server.setblocking(0)
+        server.address = (address, port,)
         server.data = []
 
         self.server = server
@@ -56,6 +57,7 @@ class SimpleSocket:
         
         client.settimeout(timeout)
         client.setblocking(0)
+        client.address = (address, port,)
         client.data = []
 
         self.server = None
@@ -71,7 +73,10 @@ class SimpleSocket:
         client = Socket(wrap_socket=client)
         client.setblocking(0)
         client.settimeout(0)
+
+        client.address = address
         client.data = []
+
         self.clients.append(client)
 
         self.handle_accept(client)
@@ -94,7 +99,11 @@ class SimpleSocket:
         except ValueError:
             pass
 
-        client.shutdown(socket.SHUT_RDWR)
+        try:
+            client.shutdown(socket.SHUT_RDWR)
+        except OSError:
+            pass
+
         client.close()
 
     def handle_close(self, client):
